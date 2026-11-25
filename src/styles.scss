@@ -19,8 +19,8 @@
   --bs-link-color: #1d4f91;
   --bs-link-hover-color: #153d73;
   --bs-border-color: #dce5f0;
-  --bs-border-radius: 0.25rem;
-  --bs-border-radius-lg: 0.375rem;
+  --bs-border-radius: 0.375rem;
+  --bs-border-radius-lg: 0.5rem;
   --bs-font-sans-serif: 'Plus Jakarta Sans', 'Segoe UI', system-ui, -apple-system,
     BlinkMacSystemFont, Roboto, sans-serif;
 }
@@ -40,11 +40,13 @@ body {
 .pratra-hero {
   background: linear-gradient(120deg, #06182e 0%, #0a2547 55%, var(--pratra-navy-800) 100%);
   color: #ffffff;
+  padding-top: 2.75rem;
+  padding-bottom: 4.5rem;
 }
 
 .pratra-hero-eyebrow {
   color: var(--pratra-sky);
-  letter-spacing: 0.02em;
+  letter-spacing: 0.03em;
 }
 
 .pratra-hero-accent {
@@ -56,7 +58,7 @@ body {
 }
 
 .pratra-search-overlap {
-  margin-top: -1.75rem;
+  margin-top: -2.25rem;
 }
 
 .pratra-footer {
@@ -103,12 +105,93 @@ body {
   border-color: var(--pratra-blue);
 }
 
+/* Soft semantic badges */
+.badge-soft-primary {
+  background-color: #eaf1fb;
+  color: var(--pratra-blue);
+  border: 1px solid #d2e0f5;
+  font-weight: 600;
+}
+
+.badge-soft-success {
+  background-color: #eaf7ef;
+  color: #156c3f;
+  border: 1px solid #cdebd8;
+  font-weight: 600;
+}
+
+.badge-soft-warning {
+  background-color: #fef6e7;
+  color: #945c00;
+  border: 1px solid #f7e0b5;
+  font-weight: 600;
+}
+
+.badge-soft-neutral {
+  background-color: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+  font-weight: 500;
+}
+
+/* Flight card styles */
+.airline-code-badge {
+  width: 42px;
+  height: 42px;
+  border-radius: 6px;
+  background-color: #eef4fc;
+  color: var(--pratra-blue);
+  border: 1px solid #d5e2f4;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
 .flight-card {
-  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
 }
 
 .flight-card:hover {
   transform: translateY(-2px);
   border-color: #b7c8df !important;
   box-shadow: 0 12px 28px rgba(10, 34, 64, 0.09) !important;
+}
+
+/* Filter sidebar controls */
+.filter-sticky {
+  top: 1.5rem;
+}
+
+.filter-stop-btn {
+  border: 1px solid #d5dfec;
+  background-color: #ffffff;
+  color: #1e3554;
+  font-weight: 500;
+  transition: all 0.15s ease;
+}
+
+.filter-stop-btn:hover {
+  border-color: var(--pratra-blue);
+  background-color: #f8fbff;
+  color: var(--pratra-blue);
+}
+
+.filter-stop-btn.active {
+  background-color: #eef4fc;
+  border-color: var(--pratra-blue);
+  color: var(--pratra-blue);
+  font-weight: 600;
+}
+
+.filter-airline-row {
+  border-radius: 0.375rem;
+  padding: 0.45rem 0.6rem;
+  transition: background-color 0.12s ease;
+}
+
+.filter-airline-row:hover {
+  background-color: #f5f8fc;
 }

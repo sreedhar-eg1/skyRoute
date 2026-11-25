@@ -1,38 +1,36 @@
 <section>
   <!-- Results Toolbar -->
-  <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+  <div class="d-flex flex-wrap justify-content-between align-items-end mb-4 gap-3">
     <div>
       @if (searchCriteria(); as criteria) {
-        <h2 class="h5 mb-1 fw-semibold">
-          Flights from {{ criteria.origin.toUpperCase() }} to {{ criteria.destination.toUpperCase() }}
+        <h2 class="h5 mb-1 fw-bold">
+          {{ criteria.origin.toUpperCase() }} &rarr; {{ criteria.destination.toUpperCase() }}
         </h2>
         <p class="small text-muted mb-0">
-          Departure: {{ criteria.departureDate }}
+          Departure {{ criteria.departureDate }}
           @if (criteria.returnDate) {
-            · Return: {{ criteria.returnDate }}
+            &middot; Return {{ criteria.returnDate }}
           }
-          · {{ criteria.passengers }} {{ criteria.passengers === 1 ? 'Passenger' : 'Passengers' }}
+          &middot; {{ criteria.passengers }} {{ criteria.passengers === 1 ? 'Passenger' : 'Passengers' }}
         </p>
       } @else {
-        <h2 class="h5 mb-1 fw-semibold">All Available Flights</h2>
+        <h2 class="h5 mb-1 fw-bold">Available Flights</h2>
         <p class="small text-muted mb-0">
-          Showing scheduled routes. Use the search bar above to narrow by route and passengers.
+          Showing scheduled routes. Use the search panel above to narrow by route and passengers.
         </p>
       }
     </div>
 
-    <div class="d-flex align-items-center gap-3">
-      @if (!loading() && !error()) {
-        <span class="badge text-bg-light border text-dark">
-          Showing {{ flights().length }} of {{ totalMatches() }}
-        </span>
-      }
-    </div>
+    @if (!loading() && !error()) {
+      <span class="badge badge-soft-neutral px-3 py-2">
+        Showing {{ flights().length }} of {{ totalMatches() }} flights
+      </span>
+    }
   </div>
 
   <!-- Loading State -->
   @if (loading()) {
-    <div class="card border-0 shadow-sm">
+    <div class="card border-0">
       <div class="card-body text-center py-5">
         <div class="spinner-border text-primary mb-3" role="status">
           <span class="visually-hidden">Loading flights...</span>
@@ -42,30 +40,31 @@
     </div>
   } @else if (error(); as errorMessage) {
     <!-- Error State -->
-    <div class="alert alert-danger d-flex flex-wrap align-items-center justify-content-between gap-2 shadow-sm" role="alert">
+    <div class="alert alert-danger d-flex flex-wrap align-items-center justify-content-between gap-3 p-4 shadow-sm" role="alert">
       <div>
-        <strong>Error:</strong> {{ errorMessage }}
+        <div class="fw-semibold mb-1">Unable to load flight results</div>
+        <div class="small">{{ errorMessage }}</div>
       </div>
-      <button type="button" class="btn btn-outline-danger btn-sm" (click)="retry.emit()">
+      <button type="button" class="btn btn-outline-danger btn-sm px-3" (click)="retry.emit()">
         Retry
       </button>
     </div>
   } @else if (flights().length === 0) {
     <!-- Empty State -->
-    <div class="card border-0 shadow-sm">
-      <div class="card-body text-center py-5">
-        <h3 class="h6 fw-semibold mb-2">No flights match your criteria</h3>
-        <p class="text-muted small mb-3">
-          Try adjusting your price, stop, or airline filters, or reset your route search.
+    <div class="card border-0">
+      <div class="card-body text-center py-5 px-4">
+        <h3 class="h6 fw-bold mb-2">No flights match your criteria</h3>
+        <p class="text-muted small mb-4">
+          Try raising your max price, changing stop preferences, or resetting your route search.
         </p>
         <div class="d-flex justify-content-center gap-2">
           @if (totalMatches() > 0) {
-            <button type="button" class="btn btn-outline-primary btn-sm" (click)="resetFilters.emit()">
+            <button type="button" class="btn btn-outline-primary btn-sm px-3" (click)="resetFilters.emit()">
               Reset Filters
             </button>
           }
           @if (searchCriteria()) {
-            <button type="button" class="btn btn-outline-secondary btn-sm" (click)="clearSearch.emit()">
+            <button type="button" class="btn btn-outline-secondary btn-sm px-3" (click)="clearSearch.emit()">
               Show All Flights
             </button>
           }
@@ -74,7 +73,7 @@
     </div>
   } @else {
     <!-- Flight Cards -->
-    <div class="d-flex flex-column gap-3">
+    <div class="d-flex flex-column gap-4">
       @for (flight of flights(); track flight.id) {
         <app-flight-card [flight]="flight" [passengers]="passengers()" />
       }

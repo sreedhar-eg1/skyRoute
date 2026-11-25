@@ -1,11 +1,13 @@
-<aside class="card border-0 shadow-sm">
-  <div class="card-body p-3 p-md-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h2 class="h6 mb-0 fw-semibold">Filters</h2>
+<aside class="card border-0 sticky-lg-top filter-sticky">
+  <div class="card-body p-4">
+    <div class="d-flex justify-content-between align-items-center pb-3 mb-4 border-bottom">
+      <div>
+        <h2 class="h6 mb-0 fw-bold">Refine Results</h2>
+      </div>
       @if (hasActiveFilters()) {
         <button
           type="button"
-          class="btn btn-link btn-sm p-0 text-decoration-none"
+          class="btn btn-link btn-sm p-0 text-decoration-none fw-medium"
           (click)="onResetFilters()"
         >
           Reset all
@@ -14,13 +16,13 @@
     </div>
 
     <!-- Sort By -->
-    <div class="mb-4">
-      <label for="sortSelect" class="form-label small fw-semibold text-uppercase text-muted">
-        Sort By
+    <div class="pb-4 mb-4 border-bottom">
+      <label for="sortSelect" class="form-label small fw-semibold mb-2">
+        Sort by
       </label>
       <select
         id="sortSelect"
-        class="form-select form-select-sm"
+        class="form-select"
         [value]="activeFilters().sortBy"
         (change)="onSortChange($event)"
       >
@@ -32,80 +34,87 @@
     </div>
 
     <!-- Max Price Filter -->
-    <div class="mb-4">
-      <div class="d-flex justify-content-between align-items-center mb-1">
-        <label for="maxPriceRange" class="form-label small fw-semibold text-uppercase text-muted mb-0">
-          Max Price
+    <div class="pb-4 mb-4 border-bottom">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <label for="maxPriceRange" class="form-label small fw-semibold mb-0">
+          Max price
         </label>
-        <span class="badge text-bg-light border text-dark">
+        <span class="badge badge-soft-primary">
           @if (activeFilters().maxPrice !== null) {
             Up to {{ effectiveMaxPrice() | currency : 'INR' : 'symbol' : '1.0-0' }}
           } @else {
-            Any
+            All fares
           }
         </span>
       </div>
       <input
         id="maxPriceRange"
         type="range"
-        class="form-range"
+        class="form-range my-2"
         [min]="priceBounds().min"
         [max]="priceBounds().max"
         step="500"
         [value]="effectiveMaxPrice()"
         (input)="onMaxPriceChange($event)"
       />
-      <div class="d-flex justify-content-between small text-muted">
+      <div class="d-flex justify-content-between small text-muted mt-1">
         <span>{{ priceBounds().min | currency : 'INR' : 'symbol' : '1.0-0' }}</span>
         <span>{{ priceBounds().max | currency : 'INR' : 'symbol' : '1.0-0' }}</span>
       </div>
     </div>
 
     <!-- Stops Filter -->
-    <div class="mb-4">
-      <div class="form-label small fw-semibold text-uppercase text-muted mb-2">
+    <div class="pb-4 mb-4 border-bottom">
+      <div class="form-label small fw-semibold mb-3">
         Stops
       </div>
-      @for (option of stopOptions; track option.value) {
-        <div class="form-check mb-1">
-          <input
-            class="form-check-input"
-            type="radio"
-            name="stopsFilter"
-            [id]="'stops-' + option.value"
-            [value]="option.value"
-            [checked]="activeFilters().stops === option.value"
-            (change)="onStopsChange(option.value)"
-          />
-          <label class="form-check-label small" [for]="'stops-' + option.value">
-            {{ option.label }}
-          </label>
-        </div>
-      }
+      <div class="row g-2" role="radiogroup" aria-label="Number of stops">
+        @for (option of stopOptions; track option.value) {
+          <div class="col-6">
+            <button
+              type="button"
+              class="btn btn-sm w-100 py-2 filter-stop-btn"
+              [class.active]="activeFilters().stops === option.value"
+              [attr.aria-pressed]="activeFilters().stops === option.value"
+              (click)="onStopsChange(option.value)"
+            >
+              {{ option.label }}
+            </button>
+          </div>
+        }
+      </div>
     </div>
 
     <!-- Airline Filter -->
     <div>
-      <div class="form-label small fw-semibold text-uppercase text-muted mb-2">
-        Airlines
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <span class="form-label small fw-semibold mb-0">Airlines</span>
+        @if (activeFilters().airlines.length > 0) {
+          <span class="small text-muted">
+            {{ activeFilters().airlines.length }} selected
+          </span>
+        }
       </div>
       @if (airlines().length === 0) {
         <p class="small text-muted mb-0">No airlines available for this route.</p>
       } @else {
-        @for (airline of airlines(); track airline) {
-          <div class="form-check mb-1">
-            <input
-              class="form-check-input"
-              type="checkbox"
-              [id]="'airline-' + airline"
-              [checked]="isAirlineSelected(airline)"
-              (change)="onAirlineToggle(airline, $event)"
-            />
-            <label class="form-check-label small" [for]="'airline-' + airline">
-              {{ airline }}
+        <div class="d-flex flex-column gap-1 mt-2">
+          @for (airline of airlines(); track airline) {
+            <label
+              class="filter-airline-row d-flex align-items-center gap-2 mb-0"
+              [for]="'airline-' + airline"
+            >
+              <input
+                class="form-check-input mt-0"
+                type="checkbox"
+                [id]="'airline-' + airline"
+                [checked]="isAirlineSelected(airline)"
+                (change)="onAirlineToggle(airline, $event)"
+              />
+              <span class="small">{{ airline }}</span>
             </label>
-          </div>
-        }
+          }
+        </div>
       }
     </div>
   </div>

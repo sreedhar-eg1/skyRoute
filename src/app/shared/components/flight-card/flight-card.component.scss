@@ -1,5 +1,36 @@
+.flight-timeline {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.flight-timeline-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #94a3b8;
+  flex-shrink: 0;
+}
+
+.flight-timeline-track {
+  height: 1px;
+  flex-grow: 1;
+  background: repeating-linear-gradient(
+    to right,
+    #cbd5e1 0,
+    #cbd5e1 4px,
+    transparent 4px,
+    transparent 7px
+  );
+}
+
+.flight-layover-hint {
+  font-size: 0.72rem;
+}
+
 @media (min-width: 768px) {
-  .border-md-0 {
+  .border-md-start {
     border-top: 0 !important;
+    border-left: 1px solid var(--pratra-border) !important;
   }
 }

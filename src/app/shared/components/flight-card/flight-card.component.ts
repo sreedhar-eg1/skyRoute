@@ -21,12 +21,20 @@ export class FlightCardComponent {
     return stops === 1 ? '1 Stop' : `${stops} Stops`;
   });
 
+  readonly layoverSummary = computed(() => {
+    const layovers = this.flight().layovers;
+    if (layovers.length === 0) {
+      return '';
+    }
+    return `via ${layovers.map((stop) => stop.airportCode).join(', ')}`;
+  });
+
   readonly stopsBadgeClass = computed(() => {
     const stops = this.flight().stops;
     if (stops === 0) {
-      return 'text-bg-success';
+      return 'badge-soft-success';
     }
-    return stops === 1 ? 'text-bg-warning' : 'text-bg-secondary';
+    return stops === 1 ? 'badge-soft-warning' : 'badge-soft-neutral';
   });
 
   readonly totalFare = computed(() => this.flight().price * Math.max(1, this.passengers()));
