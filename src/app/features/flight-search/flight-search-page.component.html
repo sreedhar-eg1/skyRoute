@@ -37,13 +37,11 @@
           [totalMatches]="vm.totalMatches"
           [loading]="vm.loading"
           [error]="vm.error"
-          [simulateError]="vm.simulateError"
           [searchCriteria]="vm.searchCriteria"
           [passengers]="vm.passengers"
           (retry)="onRetry()"
           (resetFilters)="onFiltersReset()"
           (clearSearch)="onSearchReset()"
-          (simulateErrorChange)="onSimulateErrorChange($event)"
         />
       </div>
     </div>

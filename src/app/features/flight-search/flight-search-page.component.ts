@@ -26,7 +26,6 @@ export class FlightSearchPageComponent implements OnInit {
     totalMatches: this.flightService.totalSearchMatchesCount$,
     loading: this.flightService.loading$,
     error: this.flightService.error$,
-    simulateError: this.flightService.simulateError$,
     searchCriteria: this.flightService.searchCriteria$,
     filterCriteria: this.flightService.filterCriteria$,
     airlines: this.flightService.availableAirlines$,
@@ -56,10 +55,6 @@ export class FlightSearchPageComponent implements OnInit {
   }
 
   onRetry(): void {
-    this.flightService.setSimulateError(false);
-  }
-
-  onSimulateErrorChange(enabled: boolean): void {
-    this.flightService.setSimulateError(enabled);
+    this.flightService.loadFlights();
   }
 }

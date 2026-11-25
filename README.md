@@ -11,7 +11,7 @@ SkyRoute lets users search scheduled flights, filter results reactively without 
 ### Core Capabilities
 - **Flight Search Form (`FlightSearchComponent`):** Reactive Form with inline Bootstrap validation for origin, destination, departure date, optional return date (validated not to precede departure date), passenger count (`1–9`), airport autocomplete (`<datalist>`), location swap, and quick route presets.
 - **Reactive Filtering (`FlightFiltersComponent`):** Filter results by **Max Price** (range slider), **Number of Stops** (`All`, `Non-stop`, `1 Stop`, `2+ Stops`), and **Airlines** (checkboxes), plus **Sort By** (price, duration, departure time) powered by RxJS streams.
-- **Results View (`FlightListComponent` & `FlightCardComponent`):** Displays flight cards with airline, flight number, schedule times, duration, stop badges, and price, alongside loading spinner, empty state, and error alert with retry and an in-UI **Simulate API Error** toggle.
+- **Results View (`FlightListComponent` & `FlightCardComponent`):** Displays flight cards with airline, flight number, schedule times, duration, stop badges, and price, alongside a loading spinner, empty state, and error alert with retry.
 - **Flight Details (`FlightDetailsComponent`):** Navigable via `/flights/:id`, displaying terminal info, aircraft type, cabin class, baggage allowance, layover breakdown, and passenger-scaled total price with a **Back to Results** action.
 
 ---
@@ -73,8 +73,7 @@ Flight data is stored in [`public/data/flights.json`](public/data/flights.json) 
 
 ### Simulated Latency & Error Handling
 - `getAllFlights()` applies RxJS `delay(500)` to simulate a 500ms network round trip so loading spinners are clearly observable.
-- HTTP errors are caught via `catchError`, converted into user-friendly error messages in `error$`, and displayed in a Bootstrap danger alert with a **Retry** button.
-- An in-UI **Simulate API Error** switch triggers a simulated `503 Service Unavailable` `HttpErrorResponse` inside `getAllFlights()` so reviewers can verify `catchError` and recovery behavior interactively.
+- HTTP errors are caught via `catchError`, converted into user-friendly error messages in `error$`, and displayed in a Bootstrap danger alert with a **Retry** button (verified in unit tests with `HttpTestingController`).
 
 ### Flight Data Schema (`Flight`)
 Defined in [`src/app/core/models/flight.model.ts`](src/app/core/models/flight.model.ts):
@@ -149,5 +148,5 @@ src/app/
 1. **Static Daily Schedule Dataset:** Flights in `public/data/flights.json` represent daily scheduled routes rather than date-specific inventory; therefore, searching filters by origin, destination (airport code or city name, case-insensitive), and `availableSeats >= passengers`, while storing the chosen dates for summary and details display.
 2. **Currency Format:** Prices are modeled in Indian Rupees (`INR`) to align with the primary route hubs (`DEL`, `BOM`, `BLR`, `HYD`, `GOI`, `DXB`, `SIN`) and formatted using Angular's `CurrencyPipe` (`'INR':'symbol':'1.0-0'`).
 3. **One-Way Default with Optional Return Date:** `returnDate` is optional for one-way searches. Total fare on the details page is calculated as `flight.price * passengers` based on the selected passenger count (defaulting to `1` if `/flights/:id` is opened directly).
-4. **Client-Side Filtering After Initial Fetch:** The dataset is fetched once via `HttpClient` and cached in `FlightService`'s `BehaviorSubject`; subsequent searches, sorts, and sidebar filter changes operate client-side without extra HTTP requests unless **Retry** or **Simulate API Error** is triggered.
+4. **Client-Side Filtering After Initial Fetch:** The dataset is fetched once via `HttpClient` and cached in `FlightService`'s `BehaviorSubject`; subsequent searches, sorts, and sidebar filter changes operate client-side without extra HTTP requests unless **Retry** is triggered after a failed load.
 5. **Clean Bootstrap 5 Theming:** Styling relies on Bootstrap 5 utility, grid, card, badge, and form classes (`node_modules/bootstrap/dist/css/bootstrap.min.css`), customized cleanly via Bootstrap CSS variables (`--bs-primary`, `--bs-body-bg`, `--bs-border-color`, etc.) and minimal theme classes in `src/styles.scss` inspired by Pratra's deep-navy and cool-canvas visual palette.

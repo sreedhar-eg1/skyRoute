@@ -27,20 +27,6 @@
           Showing {{ flights().length }} of {{ totalMatches() }}
         </span>
       }
-
-      <div class="form-check form-switch mb-0">
-        <input
-          class="form-check-input"
-          type="checkbox"
-          role="switch"
-          id="simulateErrorSwitch"
-          [checked]="simulateError()"
-          (change)="onSimulateErrorToggle($event)"
-        />
-        <label class="form-check-label small text-muted" for="simulateErrorSwitch">
-          Simulate API Error
-        </label>
-      </div>
     </div>
   </div>
 

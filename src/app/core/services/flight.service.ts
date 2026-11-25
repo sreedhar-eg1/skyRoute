@@ -16,7 +16,6 @@ import {
   map,
   shareReplay,
   skip,
-  switchMap,
   take,
   tap,
 } from 'rxjs/operators';
@@ -47,7 +46,6 @@ export class FlightService {
   private readonly flightsSubject = new BehaviorSubject<Flight[]>([]);
   private readonly loadingSubject = new BehaviorSubject<boolean>(false);
   private readonly errorSubject = new BehaviorSubject<string | null>(null);
-  private readonly simulateErrorSubject = new BehaviorSubject<boolean>(false);
   private readonly searchCriteriaSubject = new BehaviorSubject<SearchCriteria | null>(null);
   private readonly filterCriteriaSubject = new BehaviorSubject<FilterCriteria>(
     DEFAULT_FILTER_CRITERIA
@@ -55,7 +53,6 @@ export class FlightService {
 
   readonly loading$ = this.loadingSubject.asObservable();
   readonly error$ = this.errorSubject.asObservable();
-  readonly simulateError$ = this.simulateErrorSubject.asObservable();
   readonly searchCriteria$ = this.searchCriteriaSubject.asObservable();
   readonly filterCriteria$ = this.filterCriteriaSubject.asObservable();
 
@@ -105,23 +102,6 @@ export class FlightService {
    * Fetches all flights from the mock JSON endpoint with simulated network latency.
    */
   getAllFlights(): Observable<Flight[]> {
-    if (this.simulateErrorSubject.value) {
-      return of(null).pipe(
-        delay(500),
-        switchMap(() =>
-          throwError(
-            () =>
-              new HttpErrorResponse({
-                status: 503,
-                statusText: 'Service Unavailable',
-                url: this.dataUrl,
-                error: 'Simulated flight API failure for error-handling verification.',
-              })
-          )
-        )
-      );
-    }
-
     return this.http.get<Flight[]>(this.dataUrl).pipe(delay(500));
   }
 
@@ -162,7 +142,7 @@ export class FlightService {
    * Fetches a single flight by ID, reusing cached flights when available or loading from HTTP.
    */
   getFlightById(id: string): Observable<Flight | undefined> {
-    if (this.hasLoaded && this.flightsSubject.value.length > 0 && !this.simulateErrorSubject.value) {
+    if (this.hasLoaded && this.flightsSubject.value.length > 0) {
       return of(this.flightsSubject.value.find((flight) => flight.id === id));
     }
 
@@ -215,14 +195,6 @@ export class FlightService {
    */
   resetFilters(): void {
     this.filterCriteriaSubject.next({ ...DEFAULT_FILTER_CRITERIA });
-  }
-
-  /**
-   * Toggles simulated API error mode and reloads flights to demonstrate catchError handling.
-   */
-  setSimulateError(enabled: boolean): void {
-    this.simulateErrorSubject.next(enabled);
-    this.loadFlights();
   }
 
   getCurrentSearchCriteria(): SearchCriteria | null {
@@ -331,9 +303,6 @@ export class FlightService {
   }
 
   private formatHttpError(error: HttpErrorResponse): string {
-    if (error.status === 503) {
-      return 'Simulated API error (503): Flight service is temporarily unavailable.';
-    }
     if (error.status === 0) {
       return 'Network error: Unable to reach the flight data service.';
     }
