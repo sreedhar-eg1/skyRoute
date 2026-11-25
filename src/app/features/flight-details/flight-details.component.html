@@ -1,0 +1,247 @@
+<div class="container py-4">
+<div class="mb-3">
+  <a routerLink="/flights" class="btn btn-outline-secondary btn-sm">
+    &larr; Back to Results
+  </a>
+</div>
+
+@if (vm$ | async; as vm) {
+  @if (vm.loading) {
+    <div class="card border-0 shadow-sm">
+      <div class="card-body text-center py-5">
+        <div class="spinner-border text-primary mb-3" role="status">
+          <span class="visually-hidden">Loading flight details...</span>
+        </div>
+        <div class="text-muted small">Loading flight details...</div>
+      </div>
+    </div>
+  } @else if (vm.error; as errorMessage) {
+    <div class="alert alert-danger shadow-sm" role="alert">
+      <div class="fw-semibold mb-1">Unable to load flight details</div>
+      <div class="small mb-3">{{ errorMessage }}</div>
+      <a routerLink="/flights" class="btn btn-outline-danger btn-sm">
+        Return to Flight Search
+      </a>
+    </div>
+  } @else if (!vm.flight) {
+    <div class="alert alert-warning shadow-sm" role="alert">
+      <div class="fw-semibold mb-1">Flight not found</div>
+      <div class="small mb-3">
+        The requested flight could not be found in the schedule.
+      </div>
+      <a routerLink="/flights" class="btn btn-outline-dark btn-sm">
+        Browse All Flights
+      </a>
+    </div>
+  } @else {
+    @let flight = vm.flight;
+    @let passengers = getPassengerCount(vm.searchCriteria);
+
+    <div class="row g-4 align-items-start">
+      <!-- Main Details Column -->
+      <div class="col-12 col-lg-8 d-flex flex-column gap-4">
+        <!-- Flight Summary Header -->
+        <section class="card border-0 shadow-sm">
+          <div class="card-body p-4">
+            <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-4">
+              <div>
+                <h1 class="h4 fw-bold mb-1">
+                  {{ flight.originCity }} ({{ flight.origin }}) &rarr;
+                  {{ flight.destinationCity }} ({{ flight.destination }})
+                </h1>
+                <div class="text-muted small">
+                  {{ flight.airline }} &middot; {{ flight.flightNumber }} &middot;
+                  {{ flight.aircraftType }}
+                </div>
+              </div>
+              <div class="d-flex flex-wrap gap-2">
+                <span class="badge text-bg-primary">{{ flight.cabinClass }}</span>
+                @if (flight.refundable) {
+                  <span class="badge text-bg-success">Refundable</span>
+                } @else {
+                  <span class="badge text-bg-secondary">Non-refundable</span>
+                }
+              </div>
+            </div>
+
+            <!-- Departure & Arrival Timeline -->
+            <div class="row g-3 align-items-center bg-light rounded p-3">
+              <div class="col-12 col-sm-5">
+                <div class="text-muted small text-uppercase fw-semibold">Departure</div>
+                <div class="fs-3 fw-bold text-dark">{{ flight.departureTime }}</div>
+                <div class="fw-semibold">
+                  {{ flight.origin }} &mdash; {{ flight.originCity }}
+                </div>
+                <div class="small text-muted">{{ flight.originAirport }}</div>
+                <span class="badge text-bg-light border text-dark mt-2">
+                  {{ flight.originTerminal }}
+                </span>
+              </div>
+
+              <div class="col-12 col-sm-2 text-sm-center">
+                <div class="small fw-semibold text-dark">{{ flight.duration }}</div>
+                <div class="border-top my-2"></div>
+                <span class="badge rounded-pill text-bg-secondary">
+                  {{ getStopsLabel(flight.stops) }}
+                </span>
+              </div>
+
+              <div class="col-12 col-sm-5 text-sm-end">
+                <div class="text-muted small text-uppercase fw-semibold">Arrival</div>
+                <div class="fs-3 fw-bold text-dark">
+                  {{ flight.arrivalTime }}
+                  @if (flight.arrivalNextDay) {
+                    <sup class="text-danger fs-6 fw-normal">+1d</sup>
+                  }
+                </div>
+                <div class="fw-semibold">
+                  {{ flight.destination }} &mdash; {{ flight.destinationCity }}
+                </div>
+                <div class="small text-muted">{{ flight.destinationAirport }}</div>
+                <span class="badge text-bg-light border text-dark mt-2">
+                  {{ flight.destinationTerminal }}
+                </span>
+              </div>
+            </div>
+
+            @if (vm.searchCriteria; as criteria) {
+              <div class="mt-3 small text-muted">
+                <strong>Travel Dates:</strong> Departure {{ criteria.departureDate }}
+                @if (criteria.returnDate) {
+                  &middot; Return {{ criteria.returnDate }}
+                }
+              </div>
+            }
+          </div>
+        </section>
+
+        <!-- Layover Details -->
+        <section class="card border-0 shadow-sm">
+          <div class="card-body p-4">
+            <h2 class="h6 fw-semibold text-uppercase text-muted mb-3">Layover Details</h2>
+            @if (flight.layovers.length === 0) {
+              <p class="mb-0 text-success small fw-medium">
+                Direct flight &mdash; no layovers on this itinerary.
+              </p>
+            } @else {
+              <ul class="list-group list-group-flush">
+                @for (layover of flight.layovers; track layover.airportCode) {
+                  <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                    <div>
+                      <div class="fw-semibold">
+                        {{ layover.city }} ({{ layover.airportCode }})
+                      </div>
+                      <div class="small text-muted">{{ layover.airportName }}</div>
+                    </div>
+                    <span class="badge text-bg-warning">
+                      Layover: {{ layover.duration }}
+                    </span>
+                  </li>
+                }
+              </ul>
+            }
+          </div>
+        </section>
+
+        <!-- Aircraft & Baggage Info -->
+        <section class="card border-0 shadow-sm">
+          <div class="card-body p-4">
+            <h2 class="h6 fw-semibold text-uppercase text-muted mb-3">
+              Baggage &amp; Flight Specifications
+            </h2>
+            <div class="row g-3">
+              <div class="col-12 col-sm-6">
+                <div class="border rounded p-3 h-100">
+                  <div class="small text-muted mb-1">Cabin Baggage</div>
+                  <div class="fw-semibold">{{ flight.baggageAllowance.cabin }}</div>
+                </div>
+              </div>
+              <div class="col-12 col-sm-6">
+                <div class="border rounded p-3 h-100">
+                  <div class="small text-muted mb-1">Check-in Baggage</div>
+                  <div class="fw-semibold">{{ flight.baggageAllowance.checkIn }}</div>
+                </div>
+              </div>
+              <div class="col-12 col-sm-6">
+                <div class="border rounded p-3 h-100">
+                  <div class="small text-muted mb-1">Aircraft Type</div>
+                  <div class="fw-semibold">{{ flight.aircraftType }}</div>
+                </div>
+              </div>
+              <div class="col-12 col-sm-6">
+                <div class="border rounded p-3 h-100">
+                  <div class="small text-muted mb-1">Cabin Class &amp; Availability</div>
+                  <div class="fw-semibold">
+                    {{ flight.cabinClass }} ({{ flight.availableSeats }} seats left)
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Fare Summary Column -->
+      <div class="col-12 col-lg-4">
+        <aside class="card border-0 shadow-sm">
+          <div class="card-body p-4">
+            <h2 class="h6 fw-semibold text-uppercase text-muted mb-3">Fare Summary</h2>
+
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="text-muted small">Base fare (per passenger)</span>
+              <span class="fw-semibold">
+                {{ flight.price | currency : flight.currency : 'symbol' : '1.0-0' }}
+              </span>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <span class="text-muted small">Passengers</span>
+              <div class="btn-group btn-group-sm" role="group" aria-label="Adjust passengers">
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary"
+                  [disabled]="passengers <= 1"
+                  (click)="adjustPassengers(-1, passengers, flight.availableSeats)"
+                >
+                  -
+                </button>
+                <span class="btn btn-light disabled text-dark fw-semibold opacity-100">
+                  {{ passengers }}
+                </span>
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary"
+                  [disabled]="passengers >= flight.availableSeats || passengers >= 9"
+                  (click)="adjustPassengers(1, passengers, flight.availableSeats)"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+
+            <hr />
+
+            <div class="d-flex justify-content-between align-items-baseline mb-1">
+              <span class="fw-semibold">Total Price</span>
+              <span class="fs-4 fw-bold text-primary">
+                {{
+                  flight.price * passengers
+                    | currency : flight.currency : 'symbol' : '1.0-0'
+                }}
+              </span>
+            </div>
+            <div class="text-muted small text-end mb-3">
+              For {{ passengers }} {{ passengers === 1 ? 'passenger' : 'passengers' }}
+              (taxes included)
+            </div>
+
+            <a routerLink="/flights" class="btn btn-outline-primary w-100">
+              Back to Results
+            </a>
+          </div>
+        </aside>
+      </div>
+    </div>
+  }
+}
+</div>

@@ -1,0 +1,97 @@
+<section>
+  <!-- Results Toolbar -->
+  <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+    <div>
+      @if (searchCriteria(); as criteria) {
+        <h2 class="h5 mb-1 fw-semibold">
+          Flights from {{ criteria.origin.toUpperCase() }} to {{ criteria.destination.toUpperCase() }}
+        </h2>
+        <p class="small text-muted mb-0">
+          Departure: {{ criteria.departureDate }}
+          @if (criteria.returnDate) {
+            · Return: {{ criteria.returnDate }}
+          }
+          · {{ criteria.passengers }} {{ criteria.passengers === 1 ? 'Passenger' : 'Passengers' }}
+        </p>
+      } @else {
+        <h2 class="h5 mb-1 fw-semibold">All Available Flights</h2>
+        <p class="small text-muted mb-0">
+          Showing scheduled routes. Use the search bar above to narrow by route and passengers.
+        </p>
+      }
+    </div>
+
+    <div class="d-flex align-items-center gap-3">
+      @if (!loading() && !error()) {
+        <span class="badge text-bg-light border text-dark">
+          Showing {{ flights().length }} of {{ totalMatches() }}
+        </span>
+      }
+
+      <div class="form-check form-switch mb-0">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          role="switch"
+          id="simulateErrorSwitch"
+          [checked]="simulateError()"
+          (change)="onSimulateErrorToggle($event)"
+        />
+        <label class="form-check-label small text-muted" for="simulateErrorSwitch">
+          Simulate API Error
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="card border-0 shadow-sm">
+      <div class="card-body text-center py-5">
+        <div class="spinner-border text-primary mb-3" role="status">
+          <span class="visually-hidden">Loading flights...</span>
+        </div>
+        <div class="text-muted small">Fetching available flights...</div>
+      </div>
+    </div>
+  } @else if (error(); as errorMessage) {
+    <!-- Error State -->
+    <div class="alert alert-danger d-flex flex-wrap align-items-center justify-content-between gap-2 shadow-sm" role="alert">
+      <div>
+        <strong>Error:</strong> {{ errorMessage }}
+      </div>
+      <button type="button" class="btn btn-outline-danger btn-sm" (click)="retry.emit()">
+        Retry
+      </button>
+    </div>
+  } @else if (flights().length === 0) {
+    <!-- Empty State -->
+    <div class="card border-0 shadow-sm">
+      <div class="card-body text-center py-5">
+        <h3 class="h6 fw-semibold mb-2">No flights match your criteria</h3>
+        <p class="text-muted small mb-3">
+          Try adjusting your price, stop, or airline filters, or reset your route search.
+        </p>
+        <div class="d-flex justify-content-center gap-2">
+          @if (totalMatches() > 0) {
+            <button type="button" class="btn btn-outline-primary btn-sm" (click)="resetFilters.emit()">
+              Reset Filters
+            </button>
+          }
+          @if (searchCriteria()) {
+            <button type="button" class="btn btn-outline-secondary btn-sm" (click)="clearSearch.emit()">
+              Show All Flights
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  } @else {
+    <!-- Flight Cards -->
+    <div class="d-flex flex-column gap-3">
+      @for (flight of flights(); track flight.id) {
+        <app-flight-card [flight]="flight" [passengers]="passengers()" />
+      }
+    </div>
+  }
+</section>

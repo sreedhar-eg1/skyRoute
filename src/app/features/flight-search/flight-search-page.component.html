@@ -1,0 +1,51 @@
+<section class="pratra-hero pt-4 pb-5">
+  <div class="container pb-2">
+    <p class="small fw-medium pratra-hero-eyebrow mb-2">Connected flight discovery</p>
+    <h1 class="display-6 fw-bold text-white mb-2">
+      Find the right flight with <span class="pratra-hero-accent">SkyRoute.</span>
+    </h1>
+    <p class="pratra-hero-subtitle mb-0 col-lg-7">
+      Compare domestic and international schedules, filter reactively by fare, stops, and airline,
+      and inspect complete route and baggage details.
+    </p>
+  </div>
+</section>
+
+<div class="container pratra-search-overlap pb-4">
+  @if (vm$ | async; as vm) {
+    <app-flight-search
+      [airports]="vm.airports"
+      [initialCriteria]="vm.searchCriteria"
+      (searchSubmitted)="onSearchSubmitted($event)"
+      (searchReset)="onSearchReset()"
+    />
+
+    <div class="row g-4 align-items-start">
+      <div class="col-12 col-lg-3">
+        <app-flight-filters
+          [airlines]="vm.airlines"
+          [priceBounds]="vm.priceBounds"
+          [activeFilters]="vm.filterCriteria"
+          (filtersChange)="onFiltersChange($event)"
+          (filtersReset)="onFiltersReset()"
+        />
+      </div>
+
+      <div class="col-12 col-lg-9">
+        <app-flight-list
+          [flights]="vm.flights"
+          [totalMatches]="vm.totalMatches"
+          [loading]="vm.loading"
+          [error]="vm.error"
+          [simulateError]="vm.simulateError"
+          [searchCriteria]="vm.searchCriteria"
+          [passengers]="vm.passengers"
+          (retry)="onRetry()"
+          (resetFilters)="onFiltersReset()"
+          (clearSearch)="onSearchReset()"
+          (simulateErrorChange)="onSimulateErrorChange($event)"
+        />
+      </div>
+    </div>
+  }
+</div>

@@ -1,1 +1,114 @@
-/* You can add global styles to this file, and also import other style files */
+/* Pratra-inspired visual theme layered cleanly over Bootstrap 5 */
+:root {
+  --pratra-navy-950: #07172c;
+  --pratra-navy-900: #081b33;
+  --pratra-navy-800: #0d3b6e;
+  --pratra-ink: #0a2240;
+  --pratra-blue: #1d4f91;
+  --pratra-blue-hover: #153d73;
+  --pratra-sky: #8bb4e7;
+  --pratra-canvas: #f5f8fc;
+  --pratra-border: #dce5f0;
+  --pratra-muted: #60748d;
+
+  --bs-primary: #1d4f91;
+  --bs-primary-rgb: 29, 79, 145;
+  --bs-body-bg: #f5f8fc;
+  --bs-body-color: #0a2240;
+  --bs-secondary-color: #60748d;
+  --bs-link-color: #1d4f91;
+  --bs-link-hover-color: #153d73;
+  --bs-border-color: #dce5f0;
+  --bs-border-radius: 0.25rem;
+  --bs-border-radius-lg: 0.375rem;
+  --bs-font-sans-serif: 'Plus Jakarta Sans', 'Segoe UI', system-ui, -apple-system,
+    BlinkMacSystemFont, Roboto, sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  background-color: var(--pratra-canvas);
+  color: var(--pratra-ink);
+  font-family: var(--bs-font-sans-serif);
+}
+
+.pratra-navbar {
+  background-color: var(--pratra-navy-900);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.pratra-hero {
+  background: linear-gradient(120deg, #06182e 0%, #0a2547 55%, var(--pratra-navy-800) 100%);
+  color: #ffffff;
+}
+
+.pratra-hero-eyebrow {
+  color: var(--pratra-sky);
+  letter-spacing: 0.02em;
+}
+
+.pratra-hero-accent {
+  color: var(--pratra-sky);
+}
+
+.pratra-hero-subtitle {
+  color: #b6c7dc;
+}
+
+.pratra-search-overlap {
+  margin-top: -1.75rem;
+}
+
+.pratra-footer {
+  background-color: var(--pratra-navy-950);
+  color: #c9d7e8;
+}
+
+.card {
+  border: 1px solid var(--pratra-border) !important;
+  box-shadow: 0 8px 24px rgba(10, 34, 64, 0.05) !important;
+}
+
+.btn-primary {
+  --bs-btn-bg: var(--pratra-blue);
+  --bs-btn-border-color: var(--pratra-blue);
+  --bs-btn-hover-bg: var(--pratra-blue-hover);
+  --bs-btn-hover-border-color: var(--pratra-blue-hover);
+  --bs-btn-active-bg: #11315d;
+  --bs-btn-active-border-color: #11315d;
+}
+
+.btn-outline-primary {
+  --bs-btn-color: var(--pratra-blue);
+  --bs-btn-border-color: var(--pratra-blue);
+  --bs-btn-hover-bg: var(--pratra-blue);
+  --bs-btn-hover-border-color: var(--pratra-blue);
+  --bs-btn-active-bg: var(--pratra-blue-hover);
+  --bs-btn-active-border-color: var(--pratra-blue-hover);
+}
+
+.form-control,
+.form-select {
+  border-color: #d5dfec;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--pratra-blue);
+  box-shadow: 0 0 0 0.2rem rgba(29, 79, 145, 0.16);
+}
+
+.form-check-input:checked {
+  background-color: var(--pratra-blue);
+  border-color: var(--pratra-blue);
+}
+
+.flight-card {
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.flight-card:hover {
+  transform: translateY(-2px);
+  border-color: #b7c8df !important;
+  box-shadow: 0 12px 28px rgba(10, 34, 64, 0.09) !important;
+}

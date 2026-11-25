@@ -1,0 +1,112 @@
+<aside class="card border-0 shadow-sm">
+  <div class="card-body p-3 p-md-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="h6 mb-0 fw-semibold">Filters</h2>
+      @if (hasActiveFilters()) {
+        <button
+          type="button"
+          class="btn btn-link btn-sm p-0 text-decoration-none"
+          (click)="onResetFilters()"
+        >
+          Reset all
+        </button>
+      }
+    </div>
+
+    <!-- Sort By -->
+    <div class="mb-4">
+      <label for="sortSelect" class="form-label small fw-semibold text-uppercase text-muted">
+        Sort By
+      </label>
+      <select
+        id="sortSelect"
+        class="form-select form-select-sm"
+        [value]="activeFilters().sortBy"
+        (change)="onSortChange($event)"
+      >
+        <option value="price_asc">Price: Low to High</option>
+        <option value="price_desc">Price: High to Low</option>
+        <option value="duration_asc">Duration: Shortest</option>
+        <option value="departure_asc">Departure: Earliest</option>
+      </select>
+    </div>
+
+    <!-- Max Price Filter -->
+    <div class="mb-4">
+      <div class="d-flex justify-content-between align-items-center mb-1">
+        <label for="maxPriceRange" class="form-label small fw-semibold text-uppercase text-muted mb-0">
+          Max Price
+        </label>
+        <span class="badge text-bg-light border text-dark">
+          @if (activeFilters().maxPrice !== null) {
+            Up to {{ effectiveMaxPrice() | currency : 'INR' : 'symbol' : '1.0-0' }}
+          } @else {
+            Any
+          }
+        </span>
+      </div>
+      <input
+        id="maxPriceRange"
+        type="range"
+        class="form-range"
+        [min]="priceBounds().min"
+        [max]="priceBounds().max"
+        step="500"
+        [value]="effectiveMaxPrice()"
+        (input)="onMaxPriceChange($event)"
+      />
+      <div class="d-flex justify-content-between small text-muted">
+        <span>{{ priceBounds().min | currency : 'INR' : 'symbol' : '1.0-0' }}</span>
+        <span>{{ priceBounds().max | currency : 'INR' : 'symbol' : '1.0-0' }}</span>
+      </div>
+    </div>
+
+    <!-- Stops Filter -->
+    <div class="mb-4">
+      <div class="form-label small fw-semibold text-uppercase text-muted mb-2">
+        Stops
+      </div>
+      @for (option of stopOptions; track option.value) {
+        <div class="form-check mb-1">
+          <input
+            class="form-check-input"
+            type="radio"
+            name="stopsFilter"
+            [id]="'stops-' + option.value"
+            [value]="option.value"
+            [checked]="activeFilters().stops === option.value"
+            (change)="onStopsChange(option.value)"
+          />
+          <label class="form-check-label small" [for]="'stops-' + option.value">
+            {{ option.label }}
+          </label>
+        </div>
+      }
+    </div>
+
+    <!-- Airline Filter -->
+    <div>
+      <div class="form-label small fw-semibold text-uppercase text-muted mb-2">
+        Airlines
+      </div>
+      @if (airlines().length === 0) {
+        <p class="small text-muted mb-0">No airlines available for this route.</p>
+      } @else {
+        @for (airline of airlines(); track airline) {
+          <div class="form-check mb-1">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              [id]="'airline-' + airline"
+              [checked]="isAirlineSelected(airline)"
+              (change)="onAirlineToggle(airline, $event)"
+            />
+            <label class="form-check-label small" [for]="'airline-' + airline">
+              {{ airline }}
+            </label>
+          </div>
+        }
+      }
+    </div>
+  </div>
+</aside>
