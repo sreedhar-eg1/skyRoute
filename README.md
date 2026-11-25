@@ -150,3 +150,20 @@ src/app/
 3. **One-Way Default with Optional Return Date:** `returnDate` is optional for one-way searches. Total fare on the details page is calculated as `flight.price * passengers` based on the selected passenger count (defaulting to `1` if `/flights/:id` is opened directly).
 4. **Client-Side Filtering After Initial Fetch:** The dataset is fetched once via `HttpClient` and cached in `FlightService`'s `BehaviorSubject`; subsequent searches, sorts, and sidebar filter changes operate client-side without extra HTTP requests unless **Retry** is triggered after a failed load.
 5. **Clean Bootstrap 5 Theming:** Styling relies on Bootstrap 5 utility, grid, card, badge, and form classes (`node_modules/bootstrap/dist/css/bootstrap.min.css`), customized cleanly via Bootstrap CSS variables (`--bs-primary`, `--bs-body-bg`, `--bs-border-color`, etc.) and minimal theme classes in `src/styles.scss` inspired by Pratra's deep-navy and cool-canvas visual palette.
+
+---
+
+## 7. Live Demo & Deployment
+
+This project is pre-configured for zero-config deployment to **GitHub Pages** using GitHub Actions via [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml).
+
+### How to Enable Deployment
+1. Push this repository to GitHub with a `main` branch.
+2. In your GitHub repository, open **Settings → Pages**.
+3. Under **Build and deployment → Source**, select **GitHub Actions**.
+4. Every push to `main` (or manual run via **Actions → Deploy to GitHub Pages → Run workflow**) automatically builds and publishes the app to `https://<your-username>.github.io/<repo-name>/`.
+
+### How Subpath Routing & Assets Work
+- **Relative Mock Data Path:** `FlightService` fetches `data/flights.json` (without a leading `/`) so `HttpClient` resolves the mock JSON relative to `<base href="/<repo-name>/">` instead of the domain root.
+- **Dynamic `--base-href`:** The workflow builds with `npx ng build --configuration production --base-href /${{ github.event.repository.name }}/` using Node.js 22 and `npm ci`.
+- **Deep-Link Refresh Fallback:** After building, `dist/flight-search-app/browser/index.html` is copied to `dist/flight-search-app/browser/404.html` before deploying with `actions/upload-pages-artifact@v3` and `actions/deploy-pages@v4`, ensuring browser refreshes on nested Angular routes such as `/flights/FL101` load the SPA cleanly without a 404 page.
